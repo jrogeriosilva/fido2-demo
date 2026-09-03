@@ -125,6 +125,19 @@ ol.list li.active .d{display:block}
 .fact b{display:block;font-family:var(--font-display);font-weight:600;font-size:14px;margin-bottom:4px}
 .fact p{margin:0;font-size:13.5px;color:var(--muted)}
 .disclaimer{margin:22px 0 0;font-size:12.5px;color:var(--muted);max-width:70ch}
+.cta{margin-top:30px;padding:22px 22px 24px;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+.cta h2{font-family:var(--font-display);font-weight:600;font-size:19px;margin:0 0 6px}
+.cta .cta-lede{margin:0 0 18px;font-size:14px;color:var(--muted);max-width:72ch}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.cta-grid{grid-template-columns:1fr}}
+.cta-card{display:flex;flex-direction:column;padding:16px;border:1px solid var(--line-2);border-radius:12px;background:var(--panel-2)}
+.cta-card h3{display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-weight:600;font-size:15px;margin:0 0 6px}
+.cta-card p{margin:0 0 14px;font-size:13.5px;color:var(--muted)}
+.cta-ico{width:17px;height:17px;flex:none;color:var(--accent)}
+.cta-card .btn{align-self:flex-start;margin-top:auto;text-decoration:none}
+.cta-card .btn:hover{border-color:var(--flow)}
+.cta-card .btn.primary:hover{background:var(--flow);filter:brightness(1.07)}
+.cta-card code{font-family:var(--font-mono);font-size:12.5px;background:var(--panel);border:1px solid var(--line-2);border-radius:4px;padding:1px 4px}
 
 /* ===== SVG scene styling ===== */
 svg text{font-family:var(--font-body)}
@@ -292,6 +305,35 @@ svg[data-phone="camera"] .ph-camera,svg[data-phone="prompt"] .ph-prompt,svg[data
     <div class="fact"><b>A chave privada não sai do autenticador</b><p>Chip da chave USB, TPM do computador ou elemento seguro do celular: só a assinatura viaja.</p></div>
     <div class="fact"><b>A origem vai dentro da assinatura</b><p>O navegador grava o domínio real no clientDataJSON. Um site clonado recebe uma assinatura que não bate.</p></div>
   </div>
+  <section class="cta" aria-labelledby="ctaTitle">
+    <h2 id="ctaTitle">Agora com bytes de verdade</h2>
+    <p class="cta-lede">Esta página é ilustrativa: os valores mostrados são inventados. Para ver as mesmas cerimônias produzindo credenciais reais &mdash; e para abrir os campos de uma resposta WebAuthn byte a byte &mdash; use as duas ferramentas abaixo.</p>
+    <div class="cta-grid">
+      <div class="cta-card">
+        <h3>
+          <svg class="cta-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 1.8v5.4L2.6 12.9A2 2 0 0 0 4.3 16h7.4a2 2 0 0 0 1.7-3.1L10 7.2V1.8"/><path d="M5 1.8h6"/><path d="M4.1 11h7.8"/></svg>
+          FIDO2 Lab
+        </h3>
+        <p>Cliente de testes no navegador para servidores FIDO2. Execute registro e autenticação com um autenticador de hardware real ou com credenciais totalmente simuladas &mdash; sem precisar de chave física.</p>
+        <a class="btn primary" href="https://jrogeriosilva.github.io/fido2-lab/">
+          Abrir o FIDO2 Lab
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h9"/><path d="M8.5 4.5 12 8l-3.5 3.5"/></svg>
+        </a>
+      </div>
+      <div class="cta-card">
+        <h3>
+          <svg class="cta-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 1.5H5a2 2 0 0 0-2 2V6a2 2 0 0 1-2 2 2 2 0 0 1 2 2v2.5a2 2 0 0 0 2 2h1"/><path d="M10 1.5h1a2 2 0 0 1 2 2V6a2 2 0 0 0 2 2 2 2 0 0 0-2 2v2.5a2 2 0 0 1-2 2h-1"/></svg>
+          WebAuthn Decoder
+        </h3>
+        <p>Cole um <code>PublicKeyCredential</code>, <code>attestationObject</code>, <code>authenticatorData</code> ou <code>clientDataJSON</code> e inspecione cada campo em uma árvore navegável. Roda inteiramente no seu navegador: nada é enviado para fora.</p>
+        <a class="btn" href="https://jrogeriosilva.github.io/webauthn-decoder/">
+          Abrir o Decoder
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h9"/><path d="M8.5 4.5 12 8l-3.5 3.5"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <p class="disclaimer">Esta página é uma demonstração puramente gráfica. Nenhuma chamada real a <code>navigator.credentials</code> é feita, e os bytes exibidos são ilustrativos. Os passos seguem a estrutura das especificações WebAuthn (W3C) e CTAP2 (FIDO Alliance).</p>
 </div>
 
