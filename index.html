@@ -209,6 +209,47 @@ svg .qr rect{fill:#1B2433}
 .usb .key-lbl{opacity:0;transition:opacity .3s}
 .usb.glow .key-lbl{opacity:1}
 
+/* NFC */
+.nfc .key{transform:translate(812px,200px) rotate(-35deg);transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+.nfc.in .key{transform:translate(652px,267px) rotate(0deg)}
+.nfc.field .key-bob{animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.nfc .key-body{fill:var(--device);stroke:var(--device-edge)}
+.nfc .key-plug{fill:#B9BFC9;stroke:#8A919C}
+.nfc .key-ring{fill:none;stroke:var(--accent);stroke-width:2}
+.nfc .key-cl{fill:none;stroke:var(--accent);stroke-width:1.3;stroke-linecap:round;opacity:.85}
+.nfc .led{fill:var(--line);transition:fill .3s}
+.nfc.field .led{fill:var(--accent)}
+.nfc.busy .led{fill:var(--line);animation:blink .55s steps(1) infinite}
+.nfc.glow .led{fill:var(--ok);animation:none}
+.nfc .halo{opacity:0;transition:opacity .4s;transform-origin:center;transform-box:fill-box}
+.nfc.glow .halo{opacity:1;animation:halo 1.4s ease-in-out infinite}
+.nfc .key-lbl{opacity:0;transition:opacity .3s}
+.nfc.glow .key-lbl{opacity:1}
+/* contactless reader wired to the laptop */
+.nfc .cable{fill:none;stroke:var(--device-edge);stroke-width:2.5;stroke-linecap:round}
+.nfc .pad-body{fill:var(--device-2);stroke:var(--device-edge)}
+.nfc .pad-top{fill:var(--device)}
+.nfc .pad-cl{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-linecap:round;transition:stroke .3s}
+.nfc.field .pad-cl{stroke:var(--accent)}
+.nfc .pad-led{fill:var(--line);transition:fill .3s}
+.nfc.poll .pad-led{animation:blink 1.2s steps(1) infinite}
+.nfc.field .pad-led{fill:var(--accent)}
+.nfc.glow .pad-led{fill:var(--ok)}
+/* reader polling: pulse until a key shows up */
+.nfc .pad-ring{fill:none;stroke:var(--accent);stroke-width:2;opacity:0;transform-origin:center;transform-box:fill-box}
+.nfc.poll .pad-ring{animation:tapring 1.1s ease-out infinite}
+.nfc .pad-hint{opacity:0;transition:opacity .3s}
+.nfc.poll .pad-hint{opacity:1;animation:hint 1.1s ease-in-out infinite}
+/* 13.56 MHz field between the pad and the key */
+.nfc .waves path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;opacity:0}
+.nfc.field .waves path{animation:wave 1.6s ease-out infinite}
+.nfc.field .waves path:nth-child(2){animation-delay:.35s}
+.nfc.field .waves path:nth-child(3){animation-delay:.7s}
+.nfc .up-lbl,.nfc .hold-lbl{opacity:0;transition:opacity .35s}
+.nfc.up .up-lbl{opacity:1}
+.nfc.hold .hold-lbl{opacity:1;animation:hint 1.1s ease-in-out infinite}
+
 /* Hello */
 .hello .beam{opacity:0;transition:opacity .4s;fill:var(--flow)}
 .hello.beam .beam{opacity:.16}
@@ -261,6 +302,9 @@ svg[data-phone="camera"] .ph-camera,svg[data-phone="prompt"] .ph-prompt,svg[data
   .usb.blink .led{fill:var(--accent)}
   .usb .tap-ring,.usb .ripple{display:none}
   .usb.touch .led,.usb.touch .tap-shadow,.usb.touch .tap-lbl{transition-delay:0s}
+  .nfc.busy .led,.nfc.poll .pad-led{fill:var(--accent)}
+  .nfc .pad-ring{display:none}
+  .nfc.field .waves path{opacity:1}
 }
 </style>
 </head>
@@ -271,7 +315,7 @@ svg[data-phone="camera"] .ph-camera,svg[data-phone="prompt"] .ph-prompt,svg[data
     <div class="head-text">
       <p class="eyebrow" data-i18n="eyebrow">Demonstração visual · WebAuthn + CTAP2</p>
       <h1 data-i18n="h1">Cerimônias FIDO2, passo a passo</h1>
-      <p class="lede" data-i18n="lede">Três formas de provar quem você é sem senha: uma <strong>chave USB</strong>, o <strong>Windows Hello</strong> com a chave guardada no TPM, e uma <strong>passkey no smartphone</strong>. Escolha a cerimônia, aperte reproduzir e acompanhe o desafio ir e voltar.</p>
+      <p class="lede" data-i18n="lede">Quatro formas de provar quem você é sem senha: uma <strong>chave USB</strong>, uma <strong>chave NFC</strong> por aproximação, o <strong>Windows Hello</strong> com a chave guardada no TPM, e uma <strong>passkey no smartphone</strong>. Escolha a cerimônia, aperte reproduzir e acompanhe o desafio ir e voltar.</p>
     </div>
     <div class="lang">
       <svg class="globe" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M1.5 8h13M8 1.5c2 2 2 11 0 13M8 1.5c-2 2-2 11 0 13"/></svg>
@@ -287,6 +331,10 @@ svg[data-phone="camera"] .ph-camera,svg[data-phone="prompt"] .ph-prompt,svg[data
       <button class="tab" role="tab" data-c="usb" aria-selected="true">
         <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="8" height="8" rx="1"/><rect x="10" y="6" width="13" height="14" rx="3"/><circle cx="18" cy="13" r="1.5" fill="currentColor"/></svg>
         <span><span data-i18n="tabUsb">Chave USB</span><span class="tab-sub" data-i18n="tabUsbSub">Toque físico · CTAP2 sobre USB</span></span>
+      </button>
+      <button class="tab" role="tab" data-c="nfc" aria-selected="false">
+        <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="7" height="8" rx="1"/><rect x="9" y="6" width="9" height="14" rx="3"/><path d="M20 9.5a5 5 0 0 1 0 7M23 7a8 8 0 0 1 0 12" opacity=".6"/></svg>
+        <span><span data-i18n="tabNfc">Chave NFC</span><span class="tab-sub" data-i18n="tabNfcSub">Aproximação · CTAP2 sobre NFC</span></span>
       </button>
       <button class="tab" role="tab" data-c="hello" aria-selected="false">
         <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5a2 2 0 0 1 2-2h3M18 3h3a2 2 0 0 1 2 2v3M23 18v3a2 2 0 0 1-2 2h-3M8 23H5a2 2 0 0 1-2-2v-3"/><circle cx="9.5" cy="10.5" r="1" fill="currentColor"/><circle cx="16.5" cy="10.5" r="1" fill="currentColor"/><path d="M9 16c1 1.3 2.4 2 4 2s3-.7 4-2"/></svg>
@@ -344,7 +392,7 @@ svg[data-phone="camera"] .ph-camera,svg[data-phone="prompt"] .ph-prompt,svg[data
 
   <div class="facts">
     <div class="fact"><b data-i18n="fact1t">O desafio nunca se repete</b><p data-i18n="fact1p">Cada tentativa recebe 32 bytes aleatórios novos. Uma resposta gravada ontem não serve hoje.</p></div>
-    <div class="fact"><b data-i18n="fact2t">A chave privada não sai do autenticador</b><p data-i18n="fact2p">Chip da chave USB, TPM do computador ou elemento seguro do celular: só a assinatura viaja.</p></div>
+    <div class="fact"><b data-i18n="fact2t">A chave privada não sai do autenticador</b><p data-i18n="fact2p">Chip da chave USB ou NFC, TPM do computador ou elemento seguro do celular: só a assinatura viaja.</p></div>
     <div class="fact"><b data-i18n="fact3t">A origem vai dentro da assinatura</b><p data-i18n="fact3p">O navegador grava o domínio real no clientDataJSON. Um site clonado recebe uma assinatura que não bate.</p></div>
   </div>
   <section class="cta" aria-labelledby="ctaTitle">
@@ -391,9 +439,10 @@ const I18N = {
     metaDesc:'Demonstração interativa das cerimônias de registro e autenticação FIDO2/WebAuthn.',
     eyebrow:'Demonstração visual · WebAuthn + CTAP2',
     h1:'Cerimônias FIDO2, passo a passo',
-    lede:'Três formas de provar quem você é sem senha: uma <strong>chave USB</strong>, o <strong>Windows Hello</strong> com a chave guardada no TPM, e uma <strong>passkey no smartphone</strong>. Escolha a cerimônia, aperte reproduzir e acompanhe o desafio ir e voltar.',
+    lede:'Quatro formas de provar quem você é sem senha: uma <strong>chave USB</strong>, uma <strong>chave NFC</strong> por aproximação, o <strong>Windows Hello</strong> com a chave guardada no TPM, e uma <strong>passkey no smartphone</strong>. Escolha a cerimônia, aperte reproduzir e acompanhe o desafio ir e voltar.',
     ariaLang:'Idioma', ariaAuth:'Autenticador', ariaMode:'Tipo de cerimônia', ariaStage:'Palco da animação',
     tabUsb:'Chave USB', tabUsbSub:'Toque físico · CTAP2 sobre USB',
+    tabNfc:'Chave NFC', tabNfcSub:'Aproximação · CTAP2 sobre NFC',
     tabHello:'Windows Hello', tabHelloSub:'Rosto ou PIN · chave no TPM',
     tabPhone:'Smartphone', tabPhoneSub:'QR + Bluetooth · passkey',
     modeLogin:'Autenticação', modeRegister:'Registro',
@@ -404,7 +453,7 @@ const I18N = {
     dataTransit:'Dados em trânsito', dataRp:'No servidor', dataAuth:'No autenticador',
     tags:{user:'ação do usuário', rp:'servidor', client:'navegador', auth:'autenticador'},
     fact1t:'O desafio nunca se repete', fact1p:'Cada tentativa recebe 32 bytes aleatórios novos. Uma resposta gravada ontem não serve hoje.',
-    fact2t:'A chave privada não sai do autenticador', fact2p:'Chip da chave USB, TPM do computador ou elemento seguro do celular: só a assinatura viaja.',
+    fact2t:'A chave privada não sai do autenticador', fact2p:'Chip da chave USB ou NFC, TPM do computador ou elemento seguro do celular: só a assinatura viaja.',
     fact3t:'A origem vai dentro da assinatura', fact3p:'O navegador grava o domínio real no clientDataJSON. Um site clonado recebe uma assinatura que não bate.',
     ctaTitle:'Agora com bytes de verdade',
     ctaLede:'Esta página é ilustrativa: os valores mostrados são inventados. Para ver as mesmas cerimônias produzindo credenciais reais &mdash; e para abrir os campos de uma resposta WebAuthn byte a byte &mdash; use as duas ferramentas abaixo.',
@@ -421,11 +470,13 @@ const I18N = {
     okLogin:'Autenticado', okRegister:'Passkey cadastrada', okSub:'Bem-vinda de volta, Ana',
     keySigned:'assinado', keyCreated:'chave criada', tpmLbl:'chave privada: nunca sai do TPM 2.0', tunnelLbl:'túnel cifrado',
     keyHint:'toque na chave', tapConfirmed:'presença confirmada · UP=1',
+    nfcHint:'aproxime a chave do leitor', nfcHold:'mantenha a chave sobre o leitor', nfcUp:'presença pela aproximação · UP=1',
     qrTitle:'Use seu telefone', qrHint:'Aponte a câmera do celular para o código', bleLbl:'BLE: mesmo ambiente',
     phCode:'Código detectado', phLoginAs:'Entrar como ana?', phTouch:'Toque no sensor', phContinue:'Continuar', phSigned:'Assinado', phSignedSub:'a chave não saiu do celular',
-    ariaUsb:'Chave USB sendo inserida em um notebook', ariaHello:'Windows Hello reconhecendo um rosto com a chave no TPM', ariaPhone:'Smartphone lendo o QR code de um notebook',
+    ariaUsb:'Chave USB sendo inserida em um notebook', ariaNfc:'Chave de segurança aproximada de um leitor NFC ligado a um notebook', ariaHello:'Windows Hello reconhecendo um rosto com a chave no TPM', ariaPhone:'Smartphone lendo o QR code de um notebook',
     /* ceremonies */
     usb:{name:'chave USB', auth:'Chave USB', dlg:'Chave de segurança', note:'CTAP2 sobre USB HID · presença do usuário por toque'},
+    nfc:{name:'chave NFC', auth:'Chave NFC', dlg:'Chave de segurança', note:'CTAP2 sobre NFC · APDUs ISO 7816-4 · presença pela aproximação'},
     hello:{name:'Windows Hello', auth:'Windows Hello · TPM', dlg:'Windows Hello', note:'Autenticador de plataforma · verificação biométrica local'},
     phone:{name:'smartphone', auth:'Smartphone', dlg:'Usar um telefone', note:'Transporte híbrido · QR + Bluetooth LE + túnel cifrado'},
     /* shared steps */
@@ -466,6 +517,19 @@ const I18N = {
       s6tLogin:'Toque na chave: ela assina o desafio', s6tReg:'Toque na chave: ela cria um novo par de chaves',
       s6dLogin:'O dedo encosta no sensor. A chave localiza a chave privada ligada ao rpId e ao credentialId e assina authenticatorData ‖ SHA-256(clientDataJSON) com ela.',
       s6dReg:'O dedo encosta no sensor. A chave gera um par ES256 exclusivo para banco.exemplo: a privada fica gravada no chip seguro, a pública sai dentro de um attestationObject com um credentialId novo.'
+    },
+    nfcSteps:{
+      dlgTap:'Encoste sua chave de segurança no leitor', dlgDetected:'Chave detectada. Mantenha-a sobre o leitor', dlgVerifying:'Verificando…',
+      s4t:'Chave aproximada do leitor NFC',
+      s4d:'Ana encosta a chave no leitor. A poucos centímetros, o campo de 13,56 MHz do leitor alimenta a chave, que não tem bateria. O navegador seleciona o applet FIDO com um comando SELECT e a chave responde “FIDO_2_0”.',
+      fieldK:'campo', fieldV:'chave alimentada pelo leitor', replyK:'resposta',
+      s5t:'Comando CTAP2 embrulhado em APDU',
+      s5d:m=>'Pelo NFC o CTAP2 viaja dentro de APDUs ISO 7816-4 (NFCCTAP_MSG). O navegador envia '+(m==='login'?'authenticatorGetAssertion':'authenticatorMakeCredential')+'. Não há botão para apertar: trazer a chave até o leitor é o próprio gesto de presença (UP=1).',
+      presenceK:'presença', presenceV:'a própria aproximação (sem botão)',
+      s6tLogin:'Ainda no campo, a chave assina o desafio', s6tReg:'Ainda no campo, a chave cria um novo par de chaves',
+      s6dLogin:'Alimentada só pelo campo, a chave localiza a chave privada ligada ao rpId e ao credentialId e assina authenticatorData ‖ SHA-256(clientDataJSON). Se precisa de mais tempo, responde 0x9100 e o navegador insiste com NFCCTAP_GETRESPONSE até receber 0x9000.',
+      s6dReg:'Alimentada só pelo campo, a chave gera um par ES256 exclusivo para banco.exemplo: a privada fica gravada no chip seguro, a pública sai dentro de um attestationObject com um credentialId novo. Enquanto isso, a chave precisa continuar sobre o leitor.',
+      processing:'processando'
     },
     helloSteps:{
       s4t:'Windows assume a operação',
@@ -513,9 +577,10 @@ const I18N = {
     metaDesc:'Interactive demonstration of the FIDO2/WebAuthn registration and authentication ceremonies.',
     eyebrow:'Visual demo · WebAuthn + CTAP2',
     h1:'FIDO2 ceremonies, step by step',
-    lede:'Three ways to prove who you are without a password: a <strong>USB security key</strong>, <strong>Windows Hello</strong> with the key stored in the TPM, and a <strong>passkey on your smartphone</strong>. Pick a ceremony, press play and follow the challenge on its round trip.',
+    lede:'Four ways to prove who you are without a password: a <strong>USB security key</strong>, an <strong>NFC key</strong> tapped on a reader, <strong>Windows Hello</strong> with the key stored in the TPM, and a <strong>passkey on your smartphone</strong>. Pick a ceremony, press play and follow the challenge on its round trip.',
     ariaLang:'Language', ariaAuth:'Authenticator', ariaMode:'Ceremony type', ariaStage:'Animation stage',
     tabUsb:'USB key', tabUsbSub:'Physical touch · CTAP2 over USB',
+    tabNfc:'NFC key', tabNfcSub:'Tap on a reader · CTAP2 over NFC',
     tabHello:'Windows Hello', tabHelloSub:'Face or PIN · key in the TPM',
     tabPhone:'Smartphone', tabPhoneSub:'QR + Bluetooth · passkey',
     modeLogin:'Authentication', modeRegister:'Registration',
@@ -526,7 +591,7 @@ const I18N = {
     dataTransit:'Data in transit', dataRp:'On the server', dataAuth:'On the authenticator',
     tags:{user:'user action', rp:'server', client:'browser', auth:'authenticator'},
     fact1t:'The challenge never repeats', fact1p:'Every attempt gets 32 fresh random bytes. A response recorded yesterday is useless today.',
-    fact2t:'The private key never leaves the authenticator', fact2p:'USB key chip, computer TPM or phone secure element: only the signature travels.',
+    fact2t:'The private key never leaves the authenticator', fact2p:'USB or NFC key chip, computer TPM or phone secure element: only the signature travels.',
     fact3t:'The origin is baked into the signature', fact3p:'The browser writes the real domain into clientDataJSON. A cloned site gets a signature that does not match.',
     ctaTitle:'Now with real bytes',
     ctaLede:'This page is illustrative: the values shown are made up. To watch the same ceremonies produce real credentials &mdash; and to open the fields of a WebAuthn response byte by byte &mdash; use the two tools below.',
@@ -543,11 +608,13 @@ const I18N = {
     okLogin:'Signed in', okRegister:'Passkey created', okSub:'Welcome back, Ana',
     keySigned:'signed', keyCreated:'key created', tpmLbl:'private key: never leaves the TPM 2.0', tunnelLbl:'encrypted tunnel',
     keyHint:'touch the key', tapConfirmed:'presence confirmed · UP=1',
+    nfcHint:'hold the key near the reader', nfcHold:'keep the key over the reader', nfcUp:'presence by tapping · UP=1',
     qrTitle:'Use your phone', qrHint:'Point your phone camera at the code', bleLbl:'BLE: same room',
     phCode:'Code detected', phLoginAs:'Sign in as ana?', phTouch:'Touch the sensor', phContinue:'Continue', phSigned:'Signed', phSignedSub:'the key never left the phone',
-    ariaUsb:'USB key being inserted into a laptop', ariaHello:'Windows Hello recognizing a face with the key in the TPM', ariaPhone:'Smartphone scanning the QR code on a laptop',
+    ariaUsb:'USB key being inserted into a laptop', ariaNfc:'Security key held over an NFC reader wired to a laptop', ariaHello:'Windows Hello recognizing a face with the key in the TPM', ariaPhone:'Smartphone scanning the QR code on a laptop',
     /* ceremonies */
     usb:{name:'a USB key', auth:'USB key', dlg:'Security key', note:'CTAP2 over USB HID · user presence by touch'},
+    nfc:{name:'an NFC key', auth:'NFC key', dlg:'Security key', note:'CTAP2 over NFC · ISO 7816-4 APDUs · user presence by tapping'},
     hello:{name:'Windows Hello', auth:'Windows Hello · TPM', dlg:'Windows Hello', note:'Platform authenticator · local biometric verification'},
     phone:{name:'a smartphone', auth:'Smartphone', dlg:'Use a phone', note:'Hybrid transport · QR + Bluetooth LE + encrypted tunnel'},
     /* shared steps */
@@ -588,6 +655,19 @@ const I18N = {
       s6tLogin:'Touch the key: it signs the challenge', s6tReg:'Touch the key: it creates a new key pair',
       s6dLogin:'The finger touches the sensor. The key looks up the private key tied to the rpId and credentialId and signs authenticatorData ‖ SHA-256(clientDataJSON) with it.',
       s6dReg:'The finger touches the sensor. The key generates an ES256 pair exclusive to bank.example: the private key stays in the secure chip, the public key leaves inside an attestationObject with a new credentialId.'
+    },
+    nfcSteps:{
+      dlgTap:'Tap your security key on the reader', dlgDetected:'Key detected. Keep it over the reader', dlgVerifying:'Verifying…',
+      s4t:'Key tapped on the NFC reader',
+      s4d:'Ana taps the key on the reader. A few centimetres away, the reader’s 13.56 MHz field powers the key, which has no battery. The browser selects the FIDO applet with a SELECT command and the key answers “FIDO_2_0”.',
+      fieldK:'field', fieldV:'key powered by the reader', replyK:'reply',
+      s5t:'CTAP2 command wrapped in an APDU',
+      s5d:m=>'Over NFC, CTAP2 travels inside ISO 7816-4 APDUs (NFCCTAP_MSG). The browser sends '+(m==='login'?'authenticatorGetAssertion':'authenticatorMakeCredential')+'. There is no button to press: bringing the key to the reader is the presence gesture itself (UP=1).',
+      presenceK:'presence', presenceV:'the tap itself (no button)',
+      s6tLogin:'Still in the field, the key signs the challenge', s6tReg:'Still in the field, the key creates a new key pair',
+      s6dLogin:'Powered only by the field, the key looks up the private key tied to the rpId and credentialId and signs authenticatorData ‖ SHA-256(clientDataJSON). If it needs more time it answers 0x9100 and the browser keeps asking with NFCCTAP_GETRESPONSE until 0x9000 comes back.',
+      s6dReg:'Powered only by the field, the key generates an ES256 pair exclusive to bank.example: the private key stays in the secure chip, the public key leaves inside an attestationObject with a new credentialId. Meanwhile the key has to stay over the reader.',
+      processing:'processing'
     },
     helloSteps:{
       s4t:'Windows takes over the operation',
@@ -759,6 +839,35 @@ const CEREMONIES = {
     states:{ idle:[], inserted:['in'], blink:['in','blink'], touch:['in','touch'], signed:['in','glow'], done:['in'] }
   },
 
+  nfc: {
+    steps(mode){
+      const S=T.nfcSteps, W=T.words, L=mode==='login';
+      const dlg=m=>({type:'dialog',msg:m});
+      const getResp=`${k('SW')}: ${acc('91 00')} (${S.processing}) → ${v('NFCCTAP_GETRESPONSE')}`;
+      return [
+        stepRequest(mode), stepChallenge(mode),
+        Object.assign(stepClientData(mode, dlg(S.dlgTap)), {st:'poll'}),
+        { who:'auth', tag:'user', t:S.s4t,
+          d:S.s4d,
+          pkt:{from:'client',to:'auth',label:'SELECT AID'}, st:'tap', screen:dlg(S.dlgDetected), dur:3200,
+          data:`${k('NFC')}: ${v('ISO/IEC 14443-A · 13,56 MHz')}\n${k(S.fieldK)}: ${ok(S.fieldV)}\n${k('SELECT AID')}: ${v('00 A4 04 00 08 A0 00 00 06 47 2F 00 01')}\n${k(S.replyK)}: ${acc('"FIDO_2_0"')} ${ok('90 00')}` },
+        { who:'auth', tag:'client', t:S.s5t,
+          d:S.s5d(mode),
+          pkt:{from:'client',to:'auth',label: L?'getAssertion':'makeCredential'}, st:'cmd', screen:dlg(S.dlgDetected), dur:3200,
+          data:`${k('APDU NFCCTAP_MSG')}: ${v('80 10 00 00')} Lc …\n${k('CTAP2')} ${v(L?'authenticatorGetAssertion (0x02)':'authenticatorMakeCredential (0x01)')}\n${k('rpId')}: ${v('"'+T.domain+'"')}\n${k('clientDataHash')}: SHA-256(clientDataJSON)\n${L?k('allowList')+': [ '+v(HEX.credId)+' ]':k('user')+': { id, name: "ana" }'}\n${k(S.presenceK)}: ${ok(S.presenceV)}` },
+        { who:'auth', tag:'auth', t: L ? S.s6tLogin : S.s6tReg,
+          d: L ? S.s6dLogin : S.s6dReg,
+          pkt:null, st:'sign', screen:dlg(S.dlgVerifying), dur:3600,
+          data: L
+            ? `${getResp}\n${k('authenticatorData')}:\n  rpIdHash ${v(rpHash())}\n  flags    ${v('0x01')} (UP=1, UV=0)\n  counter  ${v('42')}\n${k('signature')}: ${acc(HEX.sig)}\n${k('SW')}: ${ok('90 00')}`
+            : `${getResp}\n${k(W.newPair)}: ES256 (P-256)\n${k('credentialId')}: ${v(HEX.credId)}\n${k('publicKey')} (COSE):\n${acc(HEX.pub)}\n${k('privateKey')}: ${ok(W.staysChip)}\n${k('SW')}: ${ok('90 00')}` },
+        stepSend(mode, 'signed', dlg(W.sending)),
+        stepVerify(mode, 0, 'done')
+      ];
+    },
+    states:{ idle:[], poll:['poll'], tap:['in','field'], cmd:['in','field','busy','up'], sign:['in','field','busy','hold'], signed:['in','field','glow'], done:['in'] }
+  },
+
   hello: {
     steps(mode){
       const S=T.helloSteps, W=T.words, L=mode==='login';
@@ -889,6 +998,7 @@ function laptop(dlgTitle, iconMarkup, extraScreen){
   </g>`;
 }
 const ICON_KEY=`<g fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,4)"><rect x="2" y="12" width="9" height="10" rx="1"/><rect x="11" y="8" width="23" height="18" rx="4"/><circle cx="26" cy="17" r="2.5" fill="var(--accent)"/></g>`;
+const ICON_NFC=`<g fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(-2,4)"><rect x="2" y="12" width="9" height="10" rx="1"/><rect x="11" y="8" width="17" height="18" rx="4"/><path d="M31 12.5a6 6 0 0 1 0 9M35.5 8.5a11 11 0 0 1 0 17"/></g>`;
 const ICON_FACE=`<g class="face-icon" transform="translate(0,2)"><path d="M3 10V6a3 3 0 0 1 3-3h4M26 3h4a3 3 0 0 1 3 3v4M36 26v4a3 3 0 0 1-3 3h-4M10 33H6a3 3 0 0 1-3-3v-4"/><circle cx="13" cy="15" r="1.4" fill="var(--flow)"/><circle cx="23" cy="15" r="1.4" fill="var(--flow)"/><path d="M12 23c2 2.5 4.5 3.5 6 3.5s4-1 6-3.5"/></g>`;
 const ICON_PHONE=`<g fill="none" stroke="var(--flow)" stroke-width="2.5" stroke-linecap="round" transform="translate(4,2)"><rect x="6" y="1" width="18" height="32" rx="4"/><path d="M12 28h6"/></g>`;
 
@@ -926,6 +1036,40 @@ const SCENES = {
     <circle cx="652" cy="336" r="10" class="ripple"/>
     <circle cx="652" cy="336" r="10" class="ripple"/>
     <text x="653" y="369" font-size="10" text-anchor="middle" class="mono tap-lbl" fill="var(--ok)">${T.tapConfirmed}</text>
+  </svg>`,
+
+  nfc: () => `<svg viewBox="0 0 800 400" class="scene nfc" data-screen="login" role="img" aria-label="${T.ariaNfc}">
+    ${laptop(T.nfc.dlg, ICON_NFC)}
+    <!-- contactless reader plugged into the laptop's USB port -->
+    <path d="M612 336 H640" class="cable"/>
+    <g class="reader">
+      <rect x="640" y="316" width="130" height="32" rx="7" class="pad-body" stroke-width="2"/>
+      <rect x="647" y="321" width="116" height="13" rx="4" class="pad-top"/>
+      <g class="pad-cl" transform="translate(659,327.5)"><path d="M0 -1.2 a1.2 1.2 0 0 1 0 2.4"/><path d="M3.5 -3.5 a4.5 4.5 0 0 1 0 7"/><path d="M7 -6.5 a8.5 8.5 0 0 1 0 13"/></g>
+      <text x="743" y="330.5" font-size="7.5" text-anchor="middle" class="mono" fill="var(--muted)" font-weight="500" letter-spacing=".1em">NFC</text>
+      <circle cx="758" cy="341" r="2.5" class="pad-led"/>
+    </g>
+    <!-- 13.56 MHz field radiating from the pad -->
+    <g class="waves">
+      <path d="M698.1 316 a8 8 0 0 1 13.8 0"/>
+      <path d="M691.1 312 a16 16 0 0 1 27.8 0"/>
+      <path d="M684.2 308 a24 24 0 0 1 41.6 0"/>
+    </g>
+    <circle cx="705" cy="327" r="10" class="pad-ring"/>
+    <text x="692" y="369" font-size="10" text-anchor="middle" class="mono pad-hint" fill="var(--accent)">${T.nfcHint}</text>
+    <text x="692" y="369" font-size="10" text-anchor="middle" class="mono up-lbl" fill="var(--ok)">${T.nfcUp}</text>
+    <text x="692" y="369" font-size="10" text-anchor="middle" class="mono hold-lbl" fill="var(--accent)">${T.nfcHold}</text>
+    <!-- the key floats a couple of centimetres above the pad -->
+    <g class="key"><g class="key-bob">
+      <rect x="0" y="0" width="22" height="14" rx="2" class="key-plug" stroke-width="1.5"/>
+      <rect x="5" y="4" width="12" height="2" fill="#7B828E"/><rect x="5" y="8" width="12" height="2" fill="#7B828E"/>
+      <circle cx="53" cy="7" r="26" class="halo" fill="var(--ok)" opacity=".18"/>
+      <rect x="22" y="-5" width="62" height="24" rx="7" class="key-body" stroke-width="2"/>
+      <g class="key-cl" transform="translate(33,7)"><path d="M0 -2.5 a3.2 3.2 0 0 1 0 5"/><path d="M3.5 -5.5 a7 7 0 0 1 0 11"/></g>
+      <circle cx="76" cy="7" r="4" class="key-ring"/>
+      <circle cx="56" cy="7" r="5.5" class="led"/>
+      <text x="53" y="-30" font-size="10" text-anchor="middle" class="mono key-lbl" fill="var(--ok)">${T.keySigned}</text>
+    </g></g>
   </svg>`,
 
   hello: () => `<svg viewBox="0 0 800 400" class="scene hello" data-screen="login" role="img" aria-label="${T.ariaHello}">
