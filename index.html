@@ -167,10 +167,33 @@ svg .qr rect{fill:#1B2433}
 .usb .led{fill:var(--line);transition:fill .3s}
 .usb.blink .led{animation:blink .55s steps(1) infinite}
 @keyframes blink{50%{fill:var(--accent)}}
-.usb.touch .led,.usb.glow .led{fill:var(--ok)}
-.usb .finger{opacity:0;transform:translate(0,-60px);transition:transform .5s cubic-bezier(.2,.7,.2,1),opacity .3s}
-.usb.touch .finger{opacity:1;transform:translate(0,0)}
-.usb .finger path{fill:var(--skin);stroke:var(--skin-2)}
+.usb.glow .led{fill:var(--ok)}
+.usb.touch .led{fill:var(--ok);transition-delay:.85s}
+/* presence check: hint while the key blinks */
+.usb .tap-ring{fill:none;stroke:var(--accent);stroke-width:2;opacity:0;transform-origin:center;transform-box:fill-box}
+.usb.blink .tap-ring{animation:tapring 1.1s ease-out infinite}
+@keyframes tapring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.4);opacity:0}}
+.usb .key-hint{opacity:0;transition:opacity .3s}
+.usb.blink .key-hint{opacity:1;animation:hint 1.1s ease-in-out infinite}
+@keyframes hint{50%{opacity:.45}}
+/* presence check: the hand comes in from the right and presses the sensor */
+.usb .finger{opacity:0;transform:translate(150px,-120px);transition:transform .45s ease-in,opacity .25s}
+.usb.touch .finger{opacity:1;transform:translate(0,0);transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .3s}
+.usb .hand{fill:var(--skin);stroke:var(--skin-2);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.usb .hand .crease{fill:none;stroke:var(--skin-2);stroke-width:1.5;opacity:.7}
+.usb .hand .nail{fill:#FBE3D0;stroke:var(--skin-2);stroke-width:1.2}
+.usb .hand .shade{fill:var(--skin-2);stroke:none;opacity:.35}
+.usb.touch .press{animation:press .4s cubic-bezier(.3,.8,.3,1) .65s both}
+@keyframes press{0%{transform:translate(0,0)}55%{transform:translate(-4px,4px)}100%{transform:translate(-2px,2px)}}
+.usb .tap-shadow{fill:#000;opacity:0;transition:opacity .25s}
+.usb.touch .tap-shadow{opacity:.22;transition-delay:.8s}
+.usb .ripple{fill:none;stroke:var(--ok);stroke-width:2;opacity:0;transform-origin:center;transform-box:fill-box}
+.usb.touch .ripple{animation:ripple 1.4s ease-out infinite}
+.usb.touch .ripple:nth-of-type(1){animation-delay:.9s}
+.usb.touch .ripple:nth-of-type(2){animation-delay:1.6s}
+@keyframes ripple{0%{transform:scale(.4);opacity:.85}100%{transform:scale(2.6);opacity:0}}
+.usb .tap-lbl{opacity:0;transition:opacity .35s}
+.usb.touch .tap-lbl{opacity:1;transition-delay:1.15s}
 .usb .halo{opacity:0;transition:opacity .4s}
 .usb.glow .halo{opacity:1;animation:halo 1.4s ease-in-out infinite}
 @keyframes halo{50%{transform:scale(1.15);opacity:.4}}
@@ -228,6 +251,8 @@ svg[data-phone="camera"] .ph-camera,svg[data-phone="prompt"] .ph-prompt,svg[data
 @media (prefers-reduced-motion: reduce){
   *{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
   .usb.blink .led{fill:var(--accent)}
+  .usb .tap-ring,.usb .ripple{display:none}
+  .usb.touch .led,.usb.touch .tap-shadow,.usb.touch .tap-lbl{transition-delay:0s}
 }
 </style>
 </head>
@@ -600,10 +625,28 @@ const SCENES = {
       <circle cx="52" cy="7" r="5.5" class="led"/>
       <text x="53" y="40" font-size="10" text-anchor="middle" class="mono key-lbl" fill="var(--ok)">assinado</text>
     </g>
-    <g class="finger" transform="translate(0,0)">
-      <path d="M660 260 c0 -14 8 -22 18 -22 c10 0 18 8 18 22 v54 c0 12 -8 22 -18 22 c-10 0 -18 -10 -18 -22 z" stroke-width="2"/>
-      <path d="M668 262 c0 -8 4 -12 10 -12 c6 0 10 4 10 12 v12 c0 6 -4 8 -10 8 c-6 0 -10 -2 -10 -8 z" fill="var(--skin-2)" opacity=".5"/>
+    <!-- presence check: hint ring while blinking, then the hand presses the sensor -->
+    <circle cx="652" cy="336" r="10" class="tap-ring"/>
+    <text x="653" y="369" font-size="10" text-anchor="middle" class="mono key-hint" fill="var(--accent)">toque na chave</text>
+    <ellipse cx="655" cy="339" rx="14" ry="9" class="tap-shadow"/>
+    <g class="finger">
+      <g class="press">
+        <!-- local coords: fingertip pad at (0,-12); rotated so the arm enters from the right -->
+        <g class="hand" transform="translate(643.5,344.5) rotate(45)">
+          <ellipse cx="-24" cy="-152" rx="13" ry="24" transform="rotate(-28 -24 -152)"/>
+          <path d="M-17 -130 L-15 -15 a15 15 0 0 0 30 0 L17 -62
+                   c0 20 30 20 30 0 c0 18 28 14 28 -6 c0 16 24 10 24 -12
+                   c6 -18 8 -40 6 -60 c-2 -20 -4 -40 -2 -70 L14 -250
+                   c-14 30 -22 60 -31 120 z"/>
+          <path class="shade" d="M14 -62 c0 20 30 20 30 0 c-4 12 -26 12 -30 0z M45 -68 c0 18 28 14 28 -6 c-4 12 -24 12 -28 6z M74 -80 c0 16 24 10 24 -12 c-4 12 -20 12 -24 12z"/>
+          <path class="crease" d="M-10 -52 q10 4 20 0 M-11 -92 q11 4 22 0"/>
+          <ellipse class="nail" cx="0" cy="-14" rx="7.5" ry="10"/>
+        </g>
+      </g>
     </g>
+    <circle cx="652" cy="336" r="10" class="ripple"/>
+    <circle cx="652" cy="336" r="10" class="ripple"/>
+    <text x="653" y="369" font-size="10" text-anchor="middle" class="mono tap-lbl" fill="var(--ok)">presença confirmada · UP=1</text>
   </svg>`,
 
   hello: `<svg viewBox="0 0 800 400" class="scene hello" data-screen="login" role="img" aria-label="Windows Hello reconhecendo um rosto com a chave no TPM">
@@ -704,6 +747,7 @@ function build(){
   $('#stepsSub').textContent=steps.length+' passos · clique em um passo para ir até ele';
   svg.querySelector('.login-btn').textContent = mode==='login' ? 'Entrar com passkey' : 'Cadastrar passkey';
   svg.querySelector('.ok-label').textContent = mode==='login' ? 'Autenticado' : 'Passkey cadastrada';
+  const kl=svg.querySelector('.key-lbl'); if(kl) kl.textContent = mode==='login' ? 'assinado' : 'chave criada';
   list.innerHTML=steps.map((s,i)=>`<li data-i="${i}"><span class="n">${String(i+1).padStart(2,'0')}</span><div><div class="t">${s.t}</div><div class="d">${s.d}<br><span class="tag ${s.tag}">${TAGS[s.tag]}</span></div></div></li>`).join('');
   document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected', t.dataset.c===ceremony));
   document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.m===mode));
