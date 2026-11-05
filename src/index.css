@@ -464,10 +464,8 @@ ol.list li.active .d {
   padding: 14px 16px;
 }
 .data h3 {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-size: 13px;
   color: var(--muted);
   margin: 0 0 8px;
   font-weight: 500;
@@ -507,9 +505,7 @@ ol.list li.active .d {
 }
 .fact {
   padding: 14px 16px;
-  border-left: 1px solid var(--line);
-  background: var(--panel-2);
-  border-radius: 0 10px 10px 0;
+  border-top: 1px solid var(--line);
 }
 .fact b {
   display: block;
@@ -531,10 +527,8 @@ ol.list li.active .d {
 }
 .cta {
   margin-top: 30px;
-  padding: 22px 22px 24px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--panel);
+  padding: 24px 0 0;
+  border-top: 1px solid var(--line);
 }
 .cta h2 {
   font-family: var(--font-display);
@@ -561,10 +555,7 @@ ol.list li.active .d {
 .cta-card {
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  border: 1px solid var(--line-2);
-  border-radius: 12px;
-  background: var(--panel-2);
+  padding: 16px 0;
 }
 .cta-card h3 {
   display: flex;
