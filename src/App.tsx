@@ -71,7 +71,17 @@ export default function App() {
         document.addEventListener('keydown', onKey);
         return () => document.removeEventListener('keydown', onKey);
     }, [index, go, togglePlayback]);
-    return <div className="wrap">
+    return <>
+    <header className="suite-header"><div className="suite-header-inner">
+      <a className="suite-brand" href="#top"><span className="suite-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span><span className="suite-brand-copy"><span className="suite-title">FIDO2 Demo</span><span className="suite-subtitle">FIDO2 · WebAuthn</span></span></a>
+      <div className="suite-actions">      <div className="lang">
+        <svg className="globe" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M1.5 8h13M8 1.5c2 2 2 11 0 13M8 1.5c-2 2-2 11 0 13"/></svg>
+        <div className="seg" role="group" aria-label={T.ariaLang}>
+          {(['pt', 'en'] as const).map(lang => <button key={lang} aria-pressed={language === lang} lang={lang === 'pt' ? 'pt-BR' : 'en'} title={lang === 'pt' ? 'Português' : 'English'} onClick={() => { setPlaying(false); setLanguage(lang); }}>{lang.toUpperCase()}</button>)}
+        </div>
+      </div></div>
+    </div></header>
+    <div className="wrap" id="top">
     <title>{T.title}</title>
     <meta name="description" content={T.metaDesc}/>
     <EcosystemNav portuguese={language === 'pt'}/>
@@ -80,12 +90,7 @@ export default function App() {
         <h1>{T.h1}</h1>
         <p className="lede">{T.lede}</p>
       </div>
-      <div className="lang">
-        <svg className="globe" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M1.5 8h13M8 1.5c2 2 2 11 0 13M8 1.5c-2 2-2 11 0 13"/></svg>
-        <div className="seg" role="group" aria-label={T.ariaLang}>
-          {(['pt', 'en'] as const).map(lang => <button key={lang} aria-pressed={language === lang} lang={lang === 'pt' ? 'pt-BR' : 'en'} title={lang === 'pt' ? 'Português' : 'English'} onClick={() => { setPlaying(false); setLanguage(lang); }}>{lang.toUpperCase()}</button>)}
-        </div>
-      </div>
+
     </header>
     <div className="selector">
       <div className="tabs" role="group" aria-label={T.ariaAuth}>
@@ -143,5 +148,5 @@ export default function App() {
       </aside>
     </main>
     <EducationalContent T={T}/>
-  </div>;
+  </div></>;
 }
