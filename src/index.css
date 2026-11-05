@@ -1414,4 +1414,7 @@ ol.list li.active button {
 .suite-title { margin: 0; font-size: 15px; font-weight: 600; line-height: 20px; letter-spacing: -0.01em; }
 .suite-subtitle { margin: 0; color: #a3adbf; font-size: 12px; line-height: 16px; }
 .suite-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.suite-github { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px; color: var(--muted); text-decoration: none; }
+.suite-github:hover { background: var(--panel); color: var(--ink); }
+.suite-github:focus-visible { outline: 2px solid var(--flow); outline-offset: 2px; }
 @media (max-width: 639px) { .suite-subtitle { display: none; } }
