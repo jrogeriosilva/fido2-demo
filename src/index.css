@@ -40,7 +40,7 @@ body {
   min-width: 320px;
 }
 .wrap {
-  max-width: 1180px;
+  max-width: 1024px;
   margin: 0 auto;
   padding: 28px 20px 56px;
 }
@@ -1353,14 +1353,40 @@ ol.list li.active button {
   }
 }
 
-/* Shared navigation across the FIDO2 tools. */
-.ecosystem-nav { display:flex; gap:4px; flex-wrap:wrap; padding:0 0 18px; margin-bottom:24px; border-bottom:1px solid #303b50; }
-.ecosystem-nav a { display:flex; flex-direction:column; gap:2px; padding:8px 12px; min-height:44px; border-radius:8px; text-decoration:none; color:#a3adbf; font-size:12px; line-height:1.4; }
-.ecosystem-nav a span:first-child { font-size:14px; font-weight:600; color:#ebebeb; }
-.ecosystem-nav a:hover, .ecosystem-nav a[aria-current] { background:#1a2845; }
-.ecosystem-nav a[aria-current] span:first-child { color:#84b0ff; }
-.ecosystem-nav a:focus-visible { outline:2px solid #84b0ff; outline-offset:2px; }
-@media (max-width:480px) { .ecosystem-nav { gap:2px; } .ecosystem-nav a { padding:8px; flex:1; } .ecosystem-nav a span:last-child { font-size:10px; } }
+/* Shared FIDO2 workspace navigation. Keep aligned across the three apps. */
+.ecosystem-nav {
+  display: flex;
+  gap: 8px;
+  padding: 0 0 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #303b50;
+}
+.ecosystem-nav a {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  min-height: 64px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #a3adbf;
+  font-size: 12px;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.ecosystem-nav a span:first-child { color: #ebebeb; font-size: 14px; font-weight: 600; }
+.ecosystem-nav a:hover { background: #141928; border-color: #303b50; }
+.ecosystem-nav a[aria-current] { background: #203455; border-color: #45618c; }
+.ecosystem-nav a[aria-current] span:first-child { color: #a9c8ff; }
+.ecosystem-nav a:focus-visible { outline: 2px solid #84b0ff; outline-offset: 3px; }
+@media (max-width: 480px) {
+  .ecosystem-nav { gap: 4px; }
+  .ecosystem-nav a { padding: 10px 8px; }
+  .ecosystem-nav a span:last-child { font-size: 11px; overflow-wrap: anywhere; }
+}
 
 .current-step { padding:16px; border-top:1px solid var(--line-2); }
 .current-step > span { color:var(--muted); font-size:12px; }
@@ -1374,3 +1400,7 @@ ol.list li.active button {
 @media (max-width:600px) { .current-step h2 { font-size:17px; } .scene-box svg { max-height:240px; } }
 
 @media (min-width:901px) { .current-step { display:none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
