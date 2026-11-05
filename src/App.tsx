@@ -5,6 +5,7 @@ import type { Actor, Ceremony, Language, Mode } from './data/types';
 import { createCeremonies } from './data/ceremonies';
 import { CeremonyScene } from './components/CeremonyScene';
 import { EducationalContent } from './components/EducationalContent';
+import { EcosystemNav } from './components/EcosystemNav';
 import { AuthenticatorIcon } from './components/AuthenticatorIcon';
 const positions: Record<Actor, number> = { rp: 12, client: 50, auth: 88 };
 const authenticators = [
@@ -73,6 +74,7 @@ export default function App() {
     return <div className="wrap">
     <title>{T.title}</title>
     <meta name="description" content={T.metaDesc}/>
+    <EcosystemNav portuguese={language === 'pt'}/>
     <header>
       <div className="head-text">
         <h1>{T.h1}</h1>
@@ -106,6 +108,10 @@ export default function App() {
         <div className="scene-box">
           <CeremonyScene ceremony={ceremony} T={T} mode={mode} step={step} states={definition.states[step.st] ?? []}/>
           <div className="note">{M.note}</div>
+        </div>
+        <div className="current-step" aria-live="polite" aria-atomic="true">
+          <span>{index + 1} / {steps.length} · {T.tags[step.tag]}</span>
+          <h2>{step.t}</h2><p>{step.d}</p>
         </div>
         <div className="controls">
           <button className="btn" onClick={() => go(0)}>{T.reset}</button>

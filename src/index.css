@@ -263,7 +263,7 @@ h1 {
   font-family: var(--font-mono);
   font-size: 11px;
   background: var(--flow);
-  color: #fff;
+  color: var(--bg);
   padding: 2px 8px;
   border-radius: 999px;
 }
@@ -1352,3 +1352,25 @@ ol.list li.active button {
     opacity: 1;
   }
 }
+
+/* Shared navigation across the FIDO2 tools. */
+.ecosystem-nav { display:flex; gap:4px; flex-wrap:wrap; padding:0 0 18px; margin-bottom:24px; border-bottom:1px solid #303b50; }
+.ecosystem-nav a { display:flex; flex-direction:column; gap:2px; padding:8px 12px; min-height:44px; border-radius:8px; text-decoration:none; color:#a3adbf; font-size:12px; line-height:1.4; }
+.ecosystem-nav a span:first-child { font-size:14px; font-weight:600; color:#ebebeb; }
+.ecosystem-nav a:hover, .ecosystem-nav a[aria-current] { background:#1a2845; }
+.ecosystem-nav a[aria-current] span:first-child { color:#84b0ff; }
+.ecosystem-nav a:focus-visible { outline:2px solid #84b0ff; outline-offset:2px; }
+@media (max-width:480px) { .ecosystem-nav { gap:2px; } .ecosystem-nav a { padding:8px; flex:1; } .ecosystem-nav a span:last-child { font-size:10px; } }
+
+.current-step { padding:16px; border-top:1px solid var(--line-2); }
+.current-step > span { color:var(--muted); font-size:12px; }
+.current-step h2 { font-size:18px; line-height:1.35; margin:6px 0; }
+.current-step p { font-size:14px; margin:0; color:var(--muted); max-width:65ch; }
+.note { position:static; padding:10px 14px; font-size:12px; }
+.scene-box { padding-bottom:0; }
+.btn, .seg button { min-height:44px; }
+::selection { background:var(--flow-soft); color:var(--ink); }
+@media (min-width:901px) { .tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); } .selector { align-items:center; } .tab { padding:10px 8px; gap:6px; } }
+@media (max-width:600px) { .current-step h2 { font-size:17px; } .scene-box svg { max-height:240px; } }
+
+@media (min-width:901px) { .current-step { display:none; } }
