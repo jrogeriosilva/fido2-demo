@@ -7,11 +7,42 @@ import { CeremonyScene } from './components/CeremonyScene';
 import { EducationalContent } from './components/EducationalContent';
 import { EcosystemNav } from './components/EcosystemNav';
 import { AuthenticatorIcon } from './components/AuthenticatorIcon';
-const positions: Record<Actor, number> = { rp: 12, client: 50, auth: 88 };
+
+const positions: Record<Actor, number> = { rp: 14, client: 50, auth: 86 };
+const lanePositions: Record<Actor, number> = { rp: 0, client: 0.5, auth: 1 };
+
 const authenticators = [
     ['usb', 'tabUsb', 'tabUsbSub'], ['nfc', 'tabNfc', 'tabNfcSub'],
     ['hello', 'tabHello', 'tabHelloSub'], ['phone', 'tabPhone', 'tabPhoneSub'],
 ] as const;
+
+function RailNodeIcon({ actor, ceremony }: {
+    actor: Actor;
+    ceremony: Ceremony;
+}) {
+    if (actor === 'rp') {
+        return (
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/>
+                <rect x="2.5" y="9" width="11" height="4.5" rx="1"/>
+                <circle cx="5" cy="4.75" r=".7" fill="currentColor" stroke="none"/>
+                <circle cx="5" cy="11.25" r=".7" fill="currentColor" stroke="none"/>
+            </svg>
+        );
+    }
+    if (actor === 'client') {
+        return (
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2" y="2.5" width="12" height="11" rx="1.8"/>
+                <path d="M2 6h12"/>
+                <circle cx="4.3" cy="4.25" r=".55" fill="currentColor" stroke="none"/>
+                <circle cx="6.2" cy="4.25" r=".55" fill="currentColor" stroke="none"/>
+            </svg>
+        );
+    }
+    return <AuthenticatorIcon ceremony={ceremony}/>;
+}
+
 export default function App() {
     const [language, setLanguage] = useState<Language>(detectLanguage);
     const [ceremony, setCeremony] = useState<Ceremony>('usb');
@@ -23,6 +54,8 @@ export default function App() {
     const steps = useMemo(() => definition.steps(mode), [definition, mode]);
     const step = steps[index];
     const M = T[ceremony];
+    const stepDuration = step.dur ?? 2800;
+
     useEffect(() => {
         document.documentElement.lang = T.htmlLang;
         try {
@@ -30,15 +63,18 @@ export default function App() {
         }
         catch { /* Storage is optional. */ }
     }, [language, T]);
+
     const go = useCallback((next: number) => {
         setPlaying(false);
         setIndex(Math.max(0, Math.min(steps.length - 1, next)));
     }, [steps.length]);
+
     const togglePlayback = useCallback(() => {
         if (index === steps.length - 1)
             setIndex(0);
         setPlaying(value => !value);
     }, [index, steps.length]);
+
     useEffect(() => {
         if (!playing)
             return;
@@ -46,9 +82,10 @@ export default function App() {
             setIndex(current => Math.min(current + 1, steps.length - 1));
             if (index >= steps.length - 2)
                 setPlaying(false);
-        }, step.dur ?? 2800);
+        }, stepDuration);
         return () => window.clearTimeout(timer);
-    }, [playing, index, step.dur, steps.length]);
+    }, [playing, index, stepDuration, steps.length]);
+
     useEffect(() => {
         const onKey = (event: KeyboardEvent) => {
             if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
@@ -71,6 +108,21 @@ export default function App() {
         document.addEventListener('keydown', onKey);
         return () => document.removeEventListener('keydown', onKey);
     }, [index, go, togglePlayback]);
+
+    const pktKey = `${ceremony}-${mode}-${language}-${index}`;
+    const pktMeta = step.pkt ? (() => {
+        const from = lanePositions[step.pkt.from];
+        const to = lanePositions[step.pkt.to];
+        const forward = to >= from;
+        return {
+            fromPct: `${from * 100}%`,
+            toPct: `${to * 100}%`,
+            segLeft: `${Math.min(from, to) * 100}%`,
+            segWidth: `${Math.abs(to - from) * 100}%`,
+            dirClass: forward ? 'fwd' : 'rev',
+        };
+    })() : null;
+
     return <>
     <header className="suite-header"><div className="suite-header-inner">
       <a className="suite-brand" href="#top"><span className="suite-mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span><span className="suite-brand-copy"><span className="suite-title">FIDO2 Demo</span><span className="suite-subtitle">FIDO2 · WebAuthn</span></span></a>
@@ -93,7 +145,6 @@ export default function App() {
         <h1>{T.h1}</h1>
         <p className="lede">{T.lede}</p>
       </div>
-
     </header>
     <div className="selector">
       <div className="tabs" role="group" aria-label={T.ariaAuth}>
@@ -106,20 +157,47 @@ export default function App() {
         {(['login', 'register'] as const).map(value => <button key={value} aria-pressed={mode === value} onClick={() => { go(0); setMode(value); }}>{value === 'login' ? T.modeLogin : T.modeRegister}</button>)}
       </div>
     </div>
-    <main className="main">
-      <section className="stage" aria-label={T.ariaStage}>
+    <main className="main" style={{ '--step-dur': `${stepDuration}ms` } as CSSProperties}>
+      <section className={`stage ${playing ? 'is-playing' : ''}`} aria-label={T.ariaStage}>
         <div className="rail">
-          <div className="track"/>
-          {(['rp', 'client', 'auth'] as const).map(actor => <div key={actor} className={`node ${step.who === actor ? 'on' : ''}`} style={{ left: `${positions[actor]}%` }}><i /><span>{actor === 'rp' ? T.nodeRp : actor === 'client' ? T.nodeClient : M.auth}</span></div>)}
-          {step.pkt && <div key={`${ceremony}-${mode}-${language}-${index}`} className="pkt show" style={{ '--from': `${positions[step.pkt.from]}%`, '--to': `${positions[step.pkt.to]}%` } as CSSProperties}><span className="pkt-label">{step.pkt.label}</span></div>}
+          <div className="track">
+            {pktMeta && <i key={pktKey} className={`track-seg ${pktMeta.dirClass}`} style={{ left: pktMeta.segLeft, width: pktMeta.segWidth }}/>}
+          </div>
+          {(['rp', 'client', 'auth'] as const).map(actor => {
+              const isOn = step.who === actor;
+              const isSender = step.pkt?.from === actor;
+              const isReceiver = step.pkt?.to === actor;
+              const cls = ['node', isOn ? 'on' : '', isSender ? 'sending' : '', isReceiver ? 'receiving' : ''].filter(Boolean).join(' ');
+              return (
+                  <div key={actor} className={cls} style={{ left: `${positions[actor]}%` }}>
+                    <i><RailNodeIcon actor={actor} ceremony={ceremony}/></i>
+                    <span>{actor === 'rp' ? T.nodeRp : actor === 'client' ? T.nodeClient : M.auth}</span>
+                  </div>
+              );
+          })}
+          {step.pkt && pktMeta && (
+              <div className="pkt-lane" aria-hidden="true">
+                <div key={pktKey} className={`pkt-runner ${pktMeta.dirClass}`} style={{ '--from-x': pktMeta.fromPct, '--to-x': pktMeta.toPct } as CSSProperties}>
+                  <div className="pkt show">
+                    <i className="pkt-tail"/>
+                    <i className="pkt-dot"/>
+                    <span className="pkt-label">{step.pkt.label}</span>
+                  </div>
+                </div>
+              </div>
+          )}
         </div>
         <div className="scene-box">
-          <CeremonyScene ceremony={ceremony} T={T} mode={mode} step={step} states={definition.states[step.st] ?? []}/>
+          <div key={ceremony} className="scene-stage">
+            <CeremonyScene ceremony={ceremony} T={T} mode={mode} step={step} states={definition.states[step.st] ?? []}/>
+          </div>
           <div className="note">{M.note}</div>
         </div>
         <div className="current-step" aria-live="polite" aria-atomic="true">
-          <span>{index + 1} / {steps.length} · {T.tags[step.tag]}</span>
-          <h2>{step.t}</h2><p>{step.d}</p>
+          <div key={`${ceremony}-${mode}-${index}`} className="current-step-body">
+            <span>{index + 1} / {steps.length} · {T.tags[step.tag]}</span>
+            <h2>{step.t}</h2><p>{step.d}</p>
+          </div>
         </div>
         <div className="controls">
           <button className="btn" onClick={() => go(0)}>{T.reset}</button>
@@ -129,7 +207,10 @@ export default function App() {
             {playing ? T.pause : T.play}
           </button>
           <button className="btn" disabled={index === steps.length - 1} onClick={() => go(index + 1)}>{T.next}</button>
-          <div className="progress" aria-hidden="true"><i style={{ transform: `scaleX(${(index + 1) / steps.length})` }}/></div>
+          <div className="progress" aria-hidden="true">
+            <i className="progress-fill" style={{ transform: `scaleX(${(index + 1) / steps.length})` }}/>
+            {playing && <b key={`play-${ceremony}-${mode}-${index}`} className="progress-timer"/>}
+          </div>
           <span className="counter" role="status">{index + 1} / {steps.length}</span>
         </div>
       </section>
@@ -140,13 +221,20 @@ export default function App() {
           <ol className="list">{steps.map((item, i) => <li key={i} className={i === index ? 'active' : i < index ? 'done' : ''}>
             <button aria-current={i === index ? 'step' : undefined} onClick={() => go(i)}>
               <span className="n">{String(i + 1).padStart(2, '0')}</span>
-              <span><span className="t">{item.t}</span><span className="d">{item.d}<br /><span className={`tag ${item.tag}`}>{T.tags[item.tag]}</span></span></span>
+              <span className="step-copy">
+                <span className="t">{item.t}</span>
+                <span className="d-wrap">
+                  <span className="d-inner">
+                    <span className="d">{item.d}<br /><span className={`tag ${item.tag}`}>{T.tags[item.tag]}</span></span>
+                  </span>
+                </span>
+              </span>
             </button>
           </li>)}</ol>
         </section>
         <section className="data" aria-labelledby="data-title">
           <h3 id="data-title">{step.tag === 'rp' ? T.dataRp : step.tag === 'auth' ? T.dataAuth : T.dataTransit}</h3>
-          <pre>{step.data}</pre>
+          <pre key={`${ceremony}-${mode}-${index}`} className="data-pre">{step.data}</pre>
         </section>
       </aside>
     </main>
